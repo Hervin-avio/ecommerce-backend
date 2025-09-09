@@ -11,13 +11,25 @@ class ProductController extends Controller
     // GET /api/products
     public function index()
     {
-        return Product::with('category')->get(); // tampilkan dengan kategori
+        $products = Product::with('category')->get();
+
+        // Ganti 'photo' dengan 'photo_url' agar frontend bisa menampilkan gambar
+        $products->transform(function ($item) {
+            $item->photo = $item->photo_url;
+            return $item;
+        });
+
+        return response()->json($products);
     }
 
     // GET /api/products/{id}
     public function show($id)
     {
         $product = Product::with(['category', 'orderItems'])->findOrFail($id);
+
+        // Gunakan photo_url untuk frontend
+        $product->photo = $product->photo_url;
+
         return response()->json($product);
     }
 
@@ -37,6 +49,9 @@ class ProductController extends Controller
         $product = Product::create($request->only([
             'name', 'description', 'status', 'category_id', 'price', 'weight', 'photo'
         ]));
+
+        // Kembalikan photo_url
+        $product->photo = $product->photo_url;
 
         return response()->json($product, 201);
     }
@@ -59,6 +74,8 @@ class ProductController extends Controller
         $product->update($request->only([
             'name', 'description', 'status', 'category_id', 'price', 'weight', 'photo'
         ]));
+
+        $product->photo = $product->photo_url;
 
         return response()->json($product);
     }

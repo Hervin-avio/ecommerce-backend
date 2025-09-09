@@ -5,29 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+// App\Models\Product.php
 class Product extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'name',
-        'description',
-        'status', // publish / draft
-        'category_id',
-        'price',
-        'weight',
-        'photo'
+        'name', 'description', 'status', 'category_id', 'price', 'weight', 'photo'
     ];
 
-    // Relasi: Product belongsTo Category
+    protected $appends = ['photo_url'];
+
+    public function getPhotoUrlAttribute()
+    {
+        if ($this->photo && !str_starts_with($this->photo, 'http')) {
+            return "https://via.placeholder.com/640x480.png/{$this->photo}";
+        }
+        return $this->photo;
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);
-    }
-
-    // Relasi: Product bisa masuk ke banyak OrderItem
-    public function orderItems()
-    {
-        return $this->hasMany(OrderItem::class);
     }
 }

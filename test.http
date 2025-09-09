@@ -103,3 +103,7 @@ POST http://localhost:8081/api/logout
 Accept: application/json
 Authorization: Authorization: Bearer 2|sanctum_ATHD8zJ8R5KnGNtLNwpxhnnKhDWSufQJ9CQ6RdpF5006502c
 
+### get products
+GET http://localhost:8081/api/products
+Accept: application/json
+Content-Type: application/json
