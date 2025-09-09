@@ -1,0 +1,105 @@
+### get all users
+GET http://localhost:8081/api/users
+Accept: application/json
+Content-Type: application/json
+
+### get single user
+GET http://localhost:8081/api/users/2
+Accept: application/json
+Content-Type: application/json
+
+### get category
+GET  http://localhost:8081/api/categories
+Accept: application/json
+Content-Type: application/json
+
+### add category
+POST http://localhost:8081/api/categories
+Accept: application/json
+Content-Type: application/json
+{
+    "name": "Category tes api",
+    "description": "Deskripsi Category Baru"
+}
+
+### Login User
+POST http://localhost:8081/api/login
+Accept: application/json
+Content-Type: application/json
+
+{
+    "email": "admin@mail.com",
+    "password": "password"
+}
+
+
+### 1️⃣ Register User Baru
+POST http://localhost:8081/api/register
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "User Baru",
+    "email": "userbaru@mail.com",
+    "password": "password123",
+    "password_confirmation": "password123"
+}
+
+### 2️⃣ Login User (gunakan email & password dari register)
+POST http://localhost:8081/api/login
+Content-Type: application/json
+Accept: application/json
+
+{
+    "email": "userbaru@mail.com",
+    "password": "password123"
+}
+
+### 3️⃣ post categori baru
+POST http://localhost:8081/api/categories
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer 2|sanctum_ATHD8zJ8R5KnGNtLNwpxhnnKhDWSufQJ9CQ6RdpF5006502c
+
+{
+    "name": "Category Tes API",
+    "description": "Deskripsi Category Baru"
+}
+
+### 3️⃣ post categori baru
+POST http://localhost:8081/api/categories
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer 2|sanctum_ATHD8zJ8R5KnGNtLNwpxhnnKhDWSufQJ9CQ6RdpF5006502c
+
+{
+    "name": "Category Tes API untuk destroy",
+    "description": "Deskripsi Category Baru"
+}
+
+### 4️⃣ get all categories
+GET http://localhost:8081/api/categories
+Accept: application/json
+Authorization: Bearer 2|sanctum_ATHD8zJ8R5KnGNtLNwpxhnnKhDWSufQJ9CQ6RdpF5006502c
+
+### 5️⃣ update category
+PUT http://localhost:8081/api/categories/11
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer 2|sanctum_ATHD8zJ8R5KnGNtLNwpxhnnKhDWSufQJ9CQ6RdpF5006502c
+
+{
+    "name": "Category Tes API Updated",
+    "description": "Deskripsi diperbarui"
+}
+
+### 6️⃣ delete category
+DELETE http://localhost:8081/api/categories/12
+Accept: application/json
+Authorization: Authorization: Bearer 2|sanctum_ATHD8zJ8R5KnGNtLNwpxhnnKhDWSufQJ9CQ6RdpF5006502c
+
+### 7️⃣ logout user
+POST http://localhost:8081/api/logout
+Accept: application/json
+Authorization: Authorization: Bearer 2|sanctum_ATHD8zJ8R5KnGNtLNwpxhnnKhDWSufQJ9CQ6RdpF5006502c
+
