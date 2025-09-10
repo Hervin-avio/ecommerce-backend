@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
         ]);
 
         // User biasa
-        User::factory(10)->create([
+        User::factory(2)->create([
             'role' => 'user',
         ]);
     }

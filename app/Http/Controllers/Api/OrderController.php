@@ -13,7 +13,10 @@ class OrderController extends Controller
     // GET /api/orders
     public function index()
     {
-        return response()->json(Order::with('items.product')->get());
+        // Ambil orders beserta items dan user (untuk nama pelanggan)
+        $orders = Order::with(['items.product', 'user'])->get();
+
+        return response()->json($orders);
     }
 
     // POST /api/orders
@@ -63,20 +66,21 @@ class OrderController extends Controller
     }
 
     // PUT /api/orders/{id}
+
     public function update(Request $request, $id)
     {
         $order = Order::findOrFail($id);
 
         $request->validate([
-            'customer' => 'sometimes|string|max:255', // ✅ ganti
             'status' => 'sometimes|string|in:baru,diproses,dikirim,selesai',
             'order_date' => 'sometimes|date',
         ]);
 
-        $order->update($request->only(['customer', 'status', 'order_date'])); // ✅ ganti
+        $order->update($request->only(['status', 'order_date']));
 
-        return response()->json($order->load('items.product'));
+        return response()->json($order->load('items.product', 'user'));
     }
+
 
     // DELETE /api/orders/{id}
     public function destroy($id)

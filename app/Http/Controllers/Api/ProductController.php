@@ -13,7 +13,7 @@ class ProductController extends Controller
     {
         $products = Product::with('category')->get();
 
-        // Ganti 'photo' dengan 'photo_url' agar frontend bisa menampilkan gambar
+        // tambahkan photo_url untuk frontend
         $products->transform(function ($item) {
             $item->photo = $item->photo_url;
             return $item;
@@ -25,36 +25,38 @@ class ProductController extends Controller
     // GET /api/products/{id}
     public function show($id)
     {
-        $product = Product::with(['category', 'orderItems'])->findOrFail($id);
-
-        // Gunakan photo_url untuk frontend
+        $product = Product::with(['category'])->findOrFail($id);
         $product->photo = $product->photo_url;
 
         return response()->json($product);
     }
 
-    // POST /api/products
     public function store(Request $request)
-    {
-        $request->validate([
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status'      => 'required|in:publish,draft',
-            'category_id' => 'required|exists:categories,id',
-            'price'       => 'required|numeric',
-            'weight'      => 'nullable|numeric',
-            'photo'       => 'nullable|string',
-        ]);
+{
+    $request->validate([
+        'name'        => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'status'      => 'required|in:publish,draft',
+        'category_id' => 'required|exists:categories,id',
+        'price'       => 'required|numeric',
+        'weight'      => 'nullable|numeric',
+        'photo'       => 'nullable|image|max:2048', // tambahkan rule image
+    ]);
 
-        $product = Product::create($request->only([
-            'name', 'description', 'status', 'category_id', 'price', 'weight', 'photo'
-        ]));
+    $data = $request->only(['name', 'description', 'status', 'category_id', 'price', 'weight']);
 
-        // Kembalikan photo_url
-        $product->photo = $product->photo_url;
-
-        return response()->json($product, 201);
+    // Upload gambar jika ada
+    if ($request->hasFile('photo')) {
+        $path = $request->file('photo')->store('products', 'public');
+        $data['photo'] = $path;
     }
+
+    $product = Product::create($data);
+    $product->photo = $product->photo_url;
+
+    return response()->json($product, 201);
+}
+
 
     // PUT /api/products/{id}
     public function update(Request $request, $id)
@@ -68,13 +70,28 @@ class ProductController extends Controller
             'category_id' => 'sometimes|exists:categories,id',
             'price'       => 'sometimes|numeric',
             'weight'      => 'sometimes|numeric',
-            'photo'       => 'sometimes|string',
+            'photo'       => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
-        $product->update($request->only([
-            'name', 'description', 'status', 'category_id', 'price', 'weight', 'photo'
-        ]));
+        $data = $request->only(['name', 'description', 'status', 'category_id', 'price', 'weight']);
 
+        if ($request->hasFile('photo')) {
+    // hapus foto lama jika ada
+    if ($product->photo && file_exists(storage_path('app/public/' . $product->photo))) {
+        unlink(storage_path('app/public/' . $product->photo));
+    }
+
+    $file = $request->file('photo');
+    $filename = time() . '_' . $file->getClientOriginalName();
+
+    // simpan di folder products agar konsisten
+    $path = $file->storeAs('products', $filename, 'public');
+
+    $data['photo'] = $path;
+}
+
+
+        $product->update($data);
         $product->photo = $product->photo_url;
 
         return response()->json($product);
@@ -84,6 +101,12 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
+
+        // hapus file foto jika ada
+        if ($product->photo && file_exists(storage_path('app/public/' . $product->photo))) {
+            unlink(storage_path('app/public/' . $product->photo));
+        }
+
         $product->delete();
 
         return response()->json(['message' => 'Product deleted successfully']);

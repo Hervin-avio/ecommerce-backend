@@ -14,25 +14,22 @@ Route::get('/ping', function () {
     return 'OK';
 });
 
-
 // ==============================
 // Public API Routes (tidak perlu login/session)
 // ==============================
 Route::apiResource('users', UserController::class)->only(['index', 'show']);
 Route::apiResource('products', ProductController::class)->only(['index', 'show']);
 Route::apiResource('orders', OrderController::class)->only(['index', 'show']);
+Route::apiResource('categories', CategoryController::class)->only(['index', 'show']);
 
 // ==============================
 // Authentication Routes
 // ==============================
-
-// Register user baru
 Route::post('/register', function (Request $request) {
     $validator = Validator::make($request->all(), [
         'name' => 'required|string|max:255',
         'email' => 'required|email|unique:users,email',
         'password' => 'required|confirmed|min:6',
-        // Password harus dikirim dengan password_confirmation
     ]);
 
     if ($validator->fails()) {
@@ -43,7 +40,7 @@ Route::post('/register', function (Request $request) {
         'name' => $request->name,
         'email' => $request->email,
         'password' => Hash::make($request->password),
-        'role' => 'user', // default role
+        'role' => 'user',
     ]);
 
     $token = $user->createToken('api-token')->plainTextToken;
@@ -54,7 +51,6 @@ Route::post('/register', function (Request $request) {
     ], 201);
 });
 
-// Login user
 Route::post('/login', function (Request $request) {
     $request->validate([
         'email' => 'required|email',
@@ -84,15 +80,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', function (Request $request) {
         $user = $request->user();
         if ($user) {
-            $user->tokens()->delete(); // hapus semua token
+            $user->tokens()->delete();
             return response()->json(['message' => 'Logged out successfully']);
         }
         return response()->json(['message' => 'No user authenticated'], 401);
     });
 
-    // Categories full CRUD
-    Route::apiResource('categories', CategoryController::class);
-
-    // Jika ingin orders juga di-protect, bisa di-uncomment
-    // Route::apiResource('orders', OrderController::class);
+    // Full CRUD
+    Route::apiResource('categories', CategoryController::class)->except(['index', 'show']);
+    Route::apiResource('products', ProductController::class)->except(['index', 'show']);
+    Route::apiResource('orders', OrderController::class)->except(['index', 'show']);
 });
