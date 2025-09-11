@@ -90,4 +90,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('categories', CategoryController::class)->except(['index', 'show']);
     Route::apiResource('products', ProductController::class)->except(['index', 'show']);
     Route::apiResource('orders', OrderController::class)->except(['index', 'show']);
+
+        // Tambahkan OrderItemController di sini
+    Route::apiResource('order-items', \App\Http\Controllers\Api\OrderItemController::class)
+        ->only(['index', 'show', 'store']);
 });
