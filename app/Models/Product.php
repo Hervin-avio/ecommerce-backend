@@ -16,7 +16,8 @@ class Product extends Model
         'category_id',
         'price',
         'weight',
-        'photo'
+        'photo',
+        'stock'
     ];
 
     protected $appends = ['photo_url'];

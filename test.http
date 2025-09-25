@@ -13,6 +13,11 @@ GET  http://localhost:8081/api/categories
 Accept: application/json
 Content-Type: application/json
 
+### get category
+GET  http://localhost:8081/api/products
+Accept: application/json
+Content-Type: application/json
+
 ### add category
 POST http://localhost:8081/api/categories
 Accept: application/json
@@ -107,3 +112,12 @@ Authorization: Authorization: Bearer 2|sanctum_ATHD8zJ8R5KnGNtLNwpxhnnKhDWSufQJ9
 GET http://localhost:8081/api/products
 Accept: application/json
 Content-Type: application/json
+
+
+### Request forgot password
+POST http://localhost/api/forgot-password HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "hervin.avionilova@gmail.com"
+}

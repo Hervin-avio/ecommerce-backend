@@ -40,10 +40,11 @@ class ProductController extends Controller
         'category_id' => 'required|exists:categories,id',
         'price'       => 'required|numeric',
         'weight'      => 'nullable|numeric',
-        'photo'       => 'nullable|image|max:2048', // tambahkan rule image
+        'stock'       => 'required|integer|min:0',
+        'photo'       => 'nullable|image|max:5120', // tambahkan rule image
     ]);
 
-    $data = $request->only(['name', 'description', 'status', 'category_id', 'price', 'weight']);
+    $data = $request->only(['name', 'description', 'status', 'category_id', 'price', 'stock','weight']);
 
     // Upload gambar jika ada
     if ($request->hasFile('photo')) {
@@ -70,10 +71,11 @@ class ProductController extends Controller
             'category_id' => 'sometimes|exists:categories,id',
             'price'       => 'sometimes|numeric',
             'weight'      => 'sometimes|numeric',
+            'stock'       => 'sometimes|integer|min:0',
             'photo'       => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
-        $data = $request->only(['name', 'description', 'status', 'category_id', 'price', 'weight']);
+        $data = $request->only(['name', 'description', 'status', 'category_id', 'price', 'stock','weight']);
 
         if ($request->hasFile('photo')) {
     // hapus foto lama jika ada
