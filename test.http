@@ -1,5 +1,5 @@
 ### get all users
-GET http://localhost:8081/api/users
+GET http://127.0.0.1:8000/api/products
 Accept: application/json
 Content-Type: application/json
 
@@ -9,12 +9,12 @@ Accept: application/json
 Content-Type: application/json
 
 ### get category
-GET  http://localhost:8081/api/categories
+GET  http://127.0.0.1:8080/api/categories
 Accept: application/json
 Content-Type: application/json
 
 ### get category
-GET  http://localhost:8081/api/products
+GET http://127.0.0.1:8000/api/products
 Accept: application/json
 Content-Type: application/json
 
@@ -115,9 +115,23 @@ Content-Type: application/json
 
 
 ### Request forgot password
-POST http://localhost/api/forgot-password HTTP/1.1
+POST http://127.0.0.1:8000/api/forgot-password HTTP/1.1
+Accept: application/json
 Content-Type: application/json
 
 {
-    "email": "hervin.avionilova@gmail.com"
+    "email": "duapuluhenamdesember2015@gmail.com"
+}
+
+### Request forgot password
+POST http://127.0.0.1:8000/api/reset-password HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+{
+        "email": "duapuluhenamdesember2015@gmail.com",
+    "token": "72aa6ae36392417dd23a9aaf248af2f0a9329dfaa7bd8141fcbead8f92df1edf",
+    "password": "new_password",
+    "password_confirmation": "new_password"
+
 }

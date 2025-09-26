@@ -5,13 +5,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Password;
-use illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\UserController;
-
 
 Route::get('/ping', function () {
     return 'OK';
@@ -75,24 +74,37 @@ Route::post('/login', function (Request $request) {
     ]);
 });
 
+// routes/api.php
+
+// Forgot Password Route
 Route::post('/forgot-password', function (Request $request) {
     $request->validate([
         'email' => 'required|email',
     ]);
 
-    // Coba mengirimkan link reset password
+    // Cek apakah email terdaftar
+    $user = User::where('email', $request->email)->first();
+
+    if (!$user) {
+        return response()->json(['message' => 'Email not found'], 404);
+    }
+
+    // Mengirimkan reset link password
     $response = Password::sendResetLink($request->only('email'));
 
     if ($response == Password::RESET_LINK_SENT) {
-        Log::info('Password reset link sent for email: ' . $request->email);
         return response()->json(['message' => 'Password reset link sent to your email!'], 200);
     } else {
-        Log::error('Failed to send reset link for email: ' . $request->email);
         return response()->json(['message' => 'Unable to send reset link'], 400);
     }
 });
 
+// Route untuk melakukan reset password dengan POST
 Route::post('/reset-password', function (Request $request) {
+    // Log untuk debugging
+    Log::info('Reset Password Request:', $request->all());
+
+    // Validasi input
     $request->validate([
         'email' => 'required|email',
         'token' => 'required',
@@ -103,17 +115,20 @@ Route::post('/reset-password', function (Request $request) {
     $response = Password::reset(
         $request->only('email', 'password', 'token'),
         function ($user, $password) {
+            // Mengatur password baru untuk user
             $user->password = bcrypt($password);
             $user->save();
         }
     );
 
+    // Cek jika berhasil reset
     if ($response == Password::PASSWORD_RESET) {
         return response()->json(['message' => 'Password has been reset successfully!'], 200);
     } else {
         return response()->json(['message' => 'Failed to reset password'], 400);
     }
 });
+
 
 // ==============================
 // Protected API Routes (harus login)
@@ -136,7 +151,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('orders', OrderController::class)->except(['index', 'show']);
     Route::apiResource('users', UserController::class)->except(['index', 'show']);
 
-        // Tambahkan OrderItemController di sini
+    // Tambahkan OrderItemController di sini
     Route::apiResource('order-items', \App\Http\Controllers\Api\OrderItemController::class)
         ->only(['index', 'show', 'store']);
 });
