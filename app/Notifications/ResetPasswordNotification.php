@@ -40,7 +40,9 @@ class ResetPasswordNotification extends Notification
     public function toMail($notifiable)
     {
         // URL yang mengarah ke frontend Vue.js
-       $url = url('http://localhost:5173/reset-password?token=' . $this->token . '&email=' . $notifiable->email);
+         $frontendUrl = config('app.frontend_url', 'http://localhost:5173');
+
+        $url = $frontendUrl . '/reset-password?token=' . $this->token . '&email=' . $notifiable->email;
 
         return (new MailMessage)
             ->line('You are receiving this email because we received a password reset request for your account.')

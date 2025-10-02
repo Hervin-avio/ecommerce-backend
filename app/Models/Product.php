@@ -33,7 +33,17 @@ class Product extends Model
         return $this->photo;
     }
 
-    return asset('storage/' . $this->photo);
+   // return asset('storage/' . $this->photo);
+    
+    // Bedakan environment
+    if (app()->environment('local')) {
+        // pakai APP_URL di lokal
+        return rtrim(config('app.url'), '/') . '/storage/' . ltrim($this->photo, '/');
+    }
+
+    // kalau production pakai FRONTEND_URL
+    return rtrim(config('app.frontend_url'), '/') . '/storage/' . ltrim($this->photo, '/');
+    
 }
 
     public function category()
